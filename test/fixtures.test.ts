@@ -1,48 +1,48 @@
 /// <reference types="vite/client" />
 
-import type { ShikiTransformer } from 'shiki'
-import { codeToHtml } from 'shiki'
-import { describe, expect, it } from 'vitest'
+import type {ShikiTransformer} from 'shiki'
+import {codeToHtml} from 'shiki'
+import {describe, expect, it} from 'vitest'
 import {
-  transformerCompactLineOptions,
-  transformerNotationDiff,
-  transformerNotationErrorLevel,
-  transformerNotationFocus,
-  transformerNotationHighlight,
-  transformerNotationWordHighlight,
-  transformerRemoveLineBreak,
-  transformerRenderWhitespace,
+    transformerCompactLineOptions,
+    transformerNotationDiff,
+    transformerNotationErrorLevel,
+    transformerNotationFocus,
+    transformerNotationHighlight,
+    transformerNotationWordHighlight,
+    transformerRemoveLineBreak,
+    transformerRenderWhitespace,
 } from '../src'
 
 function suite(
-  name: string,
-  files: Record<string, string>,
-  transformers: ShikiTransformer[],
-  replace?: (code: string) => string,
-  outputSuffix = '',
+    name: string,
+    files: Record<string, string>,
+    transformers: ShikiTransformer[],
+    replace?: (code: string) => string,
+    outputSuffix = '',
 ) {
-  describe(name, () => {
-    for (const path of Object.keys(files)) {
-      if (path.endsWith('.output.html'))
-        continue
+    describe(name, () => {
+        for (const path of Object.keys(files)) {
+            if (path.endsWith('.output.html'))
+                continue
 
-      it(path, async () => {
-        const ext = path.split('.').pop()!
+            it(path, async () => {
+                const ext = path.split('.').pop()!
 
-        let code = await codeToHtml(files[path], {
-          lang: ext,
-          theme: 'github-dark',
-          transformers,
-        })
+                let code = await codeToHtml(files[path], {
+                    lang: ext,
+                    theme: 'github-dark',
+                    transformers,
+                })
 
-        if (replace)
-          code = replace(code)
+                if (replace)
+                    code = replace(code)
 
-        expect(code)
-          .toMatchFileSnapshot(`${path}${outputSuffix}.output.html`)
-      })
-    }
-  })
+                expect(code)
+                    .toMatchFileSnapshot(`${path}${outputSuffix}.output.html`)
+            })
+        }
+    })
 }
 
 const CSS_RENDER_WHITESPACE = `
@@ -59,10 +59,10 @@ body { margin: 0; }
 // ---------
 
 suite(
-  'diff',
-  import.meta.glob('./fixtures/diff/*.*', { as: 'raw', eager: true }),
-  [transformerNotationDiff(), transformerRemoveLineBreak()],
-  code => `${code}
+    'diff',
+    import.meta.glob('./fixtures/diff/*.*', {as: 'raw', eager: true}),
+    [transformerNotationDiff(), transformerRemoveLineBreak()],
+    code => `${code}
 <style>
 body { margin: 0; }
 .shiki { padding: 1.5em; }
@@ -77,10 +77,10 @@ body { margin: 0; }
 )
 
 suite(
-  'focus',
-  import.meta.glob('./fixtures/focus/*.*', { as: 'raw', eager: true }),
-  [transformerNotationFocus(), transformerRemoveLineBreak()],
-  code => `${code}
+    'focus',
+    import.meta.glob('./fixtures/focus/*.*', {as: 'raw', eager: true}),
+    [transformerNotationFocus(), transformerRemoveLineBreak()],
+    code => `${code}
 <style>
 body { margin: 0; }
 .shiki { padding: 1em; }
@@ -90,10 +90,10 @@ body { margin: 0; }
 )
 
 suite(
-  'highlight',
-  import.meta.glob('./fixtures/highlight/*.*', { as: 'raw', eager: true }),
-  [transformerNotationHighlight(), transformerRemoveLineBreak()],
-  code => `${code}
+    'highlight',
+    import.meta.glob('./fixtures/highlight/*.*', {as: 'raw', eager: true}),
+    [transformerNotationHighlight(), transformerRemoveLineBreak()],
+    code => `${code}
 <style>
 body { margin: 0; }
 .shiki { padding: 1em; }
@@ -103,10 +103,10 @@ body { margin: 0; }
 )
 
 suite(
-  'highlight-word',
-  import.meta.glob('./fixtures/highlight-word/*.*', { as: 'raw', eager: true }),
-  [transformerNotationWordHighlight(), transformerRemoveLineBreak()],
-  code => `${code}
+    'highlight-word',
+    import.meta.glob('./fixtures/highlight-word/*.*', {as: 'raw', eager: true}),
+    [transformerNotationWordHighlight(), transformerRemoveLineBreak()],
+    code => `${code}
 <style>
 body { margin: 0; }
 .shiki { padding: 1em; }
@@ -116,10 +116,10 @@ body { margin: 0; }
 )
 
 suite(
-  'error-level',
-  import.meta.glob('./fixtures/error-level/*.*', { as: 'raw', eager: true }),
-  [transformerNotationErrorLevel(), transformerRemoveLineBreak()],
-  code => `${code}
+    'error-level',
+    import.meta.glob('./fixtures/error-level/*.*', {as: 'raw', eager: true}),
+    [transformerNotationErrorLevel(), transformerRemoveLineBreak()],
+    code => `${code}
 <style>
 body { margin: 0; }
 .shiki { padding: 1em; }
@@ -130,47 +130,50 @@ body { margin: 0; }
 )
 
 suite(
-  'whitespace:all',
-  import.meta.glob('./fixtures/whitespace/*.*', { as: 'raw', eager: true }),
-  [transformerRenderWhitespace({ position: 'all' })],
-  code => `${code}${CSS_RENDER_WHITESPACE}`,
-  '.all',
+    'whitespace:all',
+    import.meta.glob('./fixtures/whitespace/*.*', {as: 'raw', eager: true}),
+    [transformerRenderWhitespace({position: 'all'})],
+    code => `${code}${CSS_RENDER_WHITESPACE}`,
+    '.all',
 )
 
 suite(
-  'whitespace:boundary',
-  import.meta.glob('./fixtures/whitespace/*.*', { as: 'raw', eager: true }),
-  [transformerRenderWhitespace({ position: 'boundary' })],
-  code => `${code}${CSS_RENDER_WHITESPACE}`,
-  '.boundary',
+    'whitespace:boundary',
+    import.meta.glob('./fixtures/whitespace/*.*', {as: 'raw', eager: true}),
+    [transformerRenderWhitespace({position: 'boundary'})],
+    code => `${code}${CSS_RENDER_WHITESPACE}`,
+    '.boundary',
 )
 
 suite(
-  'whitespace:trailing',
-  import.meta.glob('./fixtures/whitespace/*.*', { as: 'raw', eager: true }),
-  [transformerRenderWhitespace({ position: 'trailing' })],
-  code => `${code}${CSS_RENDER_WHITESPACE}`,
-  '.trailing',
+    'whitespace:trailing',
+    import.meta.glob('./fixtures/whitespace/*.*', {as: 'raw', eager: true}),
+    [transformerRenderWhitespace({position: 'trailing'})],
+    code => `${code}${CSS_RENDER_WHITESPACE}`,
+    '.trailing',
 )
 
+const re = /^\/\/(.+)$/
+
+console.log(re.exec('// test'))
 suite(
-  'all',
-  import.meta.glob('./fixtures/all/*.*', { as: 'raw', eager: true }),
-  [
-    transformerNotationDiff(),
-    transformerNotationFocus(),
-    transformerNotationHighlight(),
-    transformerNotationErrorLevel(),
-    transformerCompactLineOptions([
-      {
-        line: 2,
-        classes: ['highlighted'],
-      },
-    ]),
-    transformerRenderWhitespace(),
-    transformerRemoveLineBreak(),
-  ],
-  code => `${code}
+    'all',
+    import.meta.glob('./fixtures/all/*.*', {as: 'raw', eager: true}),
+    [
+        transformerNotationDiff(),
+        transformerNotationFocus(),
+        transformerNotationHighlight(),
+        transformerNotationErrorLevel(),
+        transformerCompactLineOptions([
+            {
+                line: 2,
+                classes: ['highlighted'],
+            },
+        ]),
+        transformerRenderWhitespace(),
+        transformerRemoveLineBreak(),
+    ],
+    code => `${code}
 <style>
 * { tab-size: 4; }
 body { margin: 0; }
