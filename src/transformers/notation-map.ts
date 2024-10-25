@@ -24,10 +24,10 @@ export function transformerNotationMap(
 
     return createCommentNotationTransformer(
         name,
-        new RegExp(`\\[!code (${Object.keys(classMap).map(escapeRegExp).join('|')})(:\\d+)?\\]`),
+        new RegExp(`\\s*\\[!code (${Object.keys(classMap).map(escapeRegExp).join('|')})(:\\d+)?\\]`),
         function ([_, match, range = ':1'], _line, _comment, lines, index) {
             const lineNum = Number.parseInt(range.slice(1), 10)
-            
+
             lines
                 .slice(index, index + lineNum)
                 .forEach((line) => {

@@ -23,7 +23,7 @@ export function transformerNotationWordHighlight(
 
     return createCommentNotationTransformer(
         '@shikijs/transformers:notation-highlight-word',
-        /\[!code word:((?:\\.|[^:\]])+)(:\d+)?\]/,
+        /\s*\[!code word:((?:\\.|[^:\]])+)(:\d+)?\]/,
         function ([_, word, range], _line, comment, lines, index) {
             const lineNum = range ? Number.parseInt(range.slice(1), 10) : lines.length
 

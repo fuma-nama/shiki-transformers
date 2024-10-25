@@ -153,9 +153,6 @@ suite(
     '.trailing',
 )
 
-const re = /^\/\/(.+)$/
-
-console.log(re.exec('// test'))
 suite(
     'all',
     import.meta.glob('./fixtures/all/*.*', {as: 'raw', eager: true}),

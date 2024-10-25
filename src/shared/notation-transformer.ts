@@ -27,13 +27,12 @@ export function createCommentNotationTransformer(
             const parsed = data._shiki_notation ??= parseComments(code)
 
             for (const comment of parsed) {
-                const content = comment.info[1]
-                if (content.length === 0) continue
+                if (comment.info[1].length === 0) continue
 
                 let lineIdx = lines.indexOf(comment.line)
                 if (comment.line.children.length === 1) lineIdx++
 
-                comment.info[1] = content.replace(regex, (...match) => {
+                comment.info[1] = comment.info[1].replace(regex, (...match) => {
                     if (onMatch.call(this, match, comment.line, comment.token, lines, lineIdx)) {
                         return ''
                     }
@@ -42,7 +41,9 @@ export function createCommentNotationTransformer(
                 })
 
                 const isEmpty = comment.info[1].trim().length === 0
-
+                // ignore comment node
+                if (isEmpty) comment.info[1] = ''
+                
                 if (isEmpty && comment.line.children.length === 1) {
                     linesToRemove.push(comment.line)
                 } else if (isEmpty) {

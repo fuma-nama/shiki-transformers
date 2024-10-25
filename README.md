@@ -25,6 +25,6 @@ console.log("highlighted")
 console.log("highlighted")
 
 
-console.log("combine") // [!code focus][!code highlight]
-console.log("combine") // Comment Allowed[!code focus][!code highlight]
+console.log("combine") // [!code focus] [!code highlight]
+console.log("combine") // Comment Allowed [!code focus] [!code highlight]
 ```
