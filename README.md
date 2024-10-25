@@ -28,3 +28,25 @@ console.log("highlighted")
 console.log("combine") // [!code focus] [!code highlight]
 console.log("combine") // Comment Allowed [!code focus] [!code highlight]
 ```
+
+### JSX Supported
+
+```jsx
+<div>
+    <p>Hello World</p>
+    {/* [!code highlight] */}
+    <p>Highlighted</p>
+</div>
+```
+
+### Performance
+
+It only looks for the last token of line to scan comments, and extend only when JSX is enabled:
+
+```jsx
+<>
+    {/* [!code highlight] */}
+</>
+```
+
+As there's a curly bracket `}` before the comment itself.

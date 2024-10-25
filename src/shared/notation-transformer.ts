@@ -17,20 +17,21 @@ export function createCommentNotationTransformer(
     return {
         name,
         code(code) {
-            const lines = code.children.filter(i => i.type === 'element') as Element[]
+            const lines = code.children.filter(i => i.type === 'element')
             const linesToRemove: (Element | Text)[] = []
 
             code.data ??= {}
             const data = code.data as {
                 _shiki_notation?: ParsedComments
             }
-            const parsed = data._shiki_notation ??= parseComments(code)
+            const parsed = data._shiki_notation ??= parseComments(lines, ['jsx', 'tsx'].includes(this.options.lang))
 
             for (const comment of parsed) {
                 if (comment.info[1].length === 0) continue
 
+                const isLineCommentOnly = comment.line.children.length === (comment.jsxIntercept ? 3 : 1)
                 let lineIdx = lines.indexOf(comment.line)
-                if (comment.line.children.length === 1) lineIdx++
+                if (isLineCommentOnly) lineIdx++
 
                 comment.info[1] = comment.info[1].replace(regex, (...match) => {
                     if (onMatch.call(this, match, comment.line, comment.token, lines, lineIdx)) {
@@ -43,9 +44,11 @@ export function createCommentNotationTransformer(
                 const isEmpty = comment.info[1].trim().length === 0
                 // ignore comment node
                 if (isEmpty) comment.info[1] = ''
-                
-                if (isEmpty && comment.line.children.length === 1) {
+
+                if (isEmpty && isLineCommentOnly) {
                     linesToRemove.push(comment.line)
+                } else if (isEmpty && comment.jsxIntercept) {
+                    comment.line.children.splice(comment.line.children.indexOf(comment.token) - 1, 3)
                 } else if (isEmpty) {
                     comment.line.children.splice(comment.line.children.indexOf(comment.token), 1)
                 } else {
