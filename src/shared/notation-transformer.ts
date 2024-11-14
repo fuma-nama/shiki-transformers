@@ -1,6 +1,6 @@
-import type {Element, Text} from 'hast'
-import type {ShikiTransformer, ShikiTransformerContext} from 'shiki'
-import {parseComments, ParsedComments} from "./parse-comments";
+import type { Element, Text } from 'hast'
+import type { ShikiTransformer, ShikiTransformerContext } from 'shiki'
+import { parseComments, type ParsedComments } from "./parse-comments";
 
 export function createCommentNotationTransformer(
     name: string,
@@ -24,12 +24,14 @@ export function createCommentNotationTransformer(
             const data = code.data as {
                 _shiki_notation?: ParsedComments
             }
-            const parsed = data._shiki_notation ??= parseComments(lines, ['jsx', 'tsx'].includes(this.options.lang))
+
+            data._shiki_notation ??= parseComments(lines, ['jsx', 'tsx'].includes(this.options.lang))
+            const parsed = data._shiki_notation
 
             for (const comment of parsed) {
                 if (comment.info[1].length === 0) continue
 
-                const isLineCommentOnly = comment.line.children.length === (comment.jsxIntercept ? 3 : 1)
+                const isLineCommentOnly = comment.line.children.length === (comment.isJsxStyle ? 3 : 1)
                 let lineIdx = lines.indexOf(comment.line)
                 if (isLineCommentOnly) lineIdx++
 
@@ -47,7 +49,7 @@ export function createCommentNotationTransformer(
 
                 if (isEmpty && isLineCommentOnly) {
                     linesToRemove.push(comment.line)
-                } else if (isEmpty && comment.jsxIntercept) {
+                } else if (isEmpty && comment.isJsxStyle) {
                     comment.line.children.splice(comment.line.children.indexOf(comment.token) - 1, 3)
                 } else if (isEmpty) {
                     comment.line.children.splice(comment.line.children.indexOf(comment.token), 1)

@@ -1,6 +1,6 @@
-import type {ShikiTransformer} from 'shiki'
-import {highlightWordInLine} from '../shared/highlight-word'
-import {createCommentNotationTransformer} from '../shared/notation-transformer'
+import type { ShikiTransformer } from 'shiki'
+import { highlightWordInLine } from '../shared/highlight-word'
+import { createCommentNotationTransformer } from '../shared/notation-transformer'
 
 export interface TransformerNotationWordHighlightOptions {
     /**
@@ -29,11 +29,9 @@ export function transformerNotationWordHighlight(
 
             // escape backslashes
             word = word.replace(/\\(.)/g, '$1')
-
-            lines
-                // Don't include the comment itself
-                .slice(index, index + lineNum)
-                .forEach(line => highlightWordInLine.call(this, line, comment, word, classActiveWord))
+            for (let i = index; i < Math.min(index + lineNum, lines.length); i++) {
+                highlightWordInLine.call(this, lines[i], comment, word, classActiveWord)
+            }
 
             if (classActivePre)
                 this.addClassToHast(this.pre, classActivePre)

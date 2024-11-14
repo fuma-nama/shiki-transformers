@@ -1,5 +1,5 @@
-import type {ShikiTransformer} from 'shiki'
-import {createCommentNotationTransformer} from '../shared/notation-transformer'
+import type { ShikiTransformer } from 'shiki'
+import { createCommentNotationTransformer } from '../shared/notation-transformer'
 
 export interface TransformerNotationMapOptions {
     classMap?: Record<string, string | string[]>
@@ -28,11 +28,10 @@ export function transformerNotationMap(
         function ([_, match, range = ':1'], _line, _comment, lines, index) {
             const lineNum = Number.parseInt(range.slice(1), 10)
 
-            lines
-                .slice(index, index + lineNum)
-                .forEach((line) => {
-                    this.addClassToHast(line, classMap[match])
-                })
+            for (let i = index; i < Math.min(index + lineNum, lines.length); i++) {
+                this.addClassToHast(lines[i], classMap[match])
+            }
+
             if (classActivePre)
                 this.addClassToHast(this.pre, classActivePre)
             return true

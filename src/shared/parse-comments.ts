@@ -1,16 +1,24 @@
-import type {Element, ElementContent} from "hast"
+import type { Element, ElementContent } from "hast"
 
 export type ParsedComments = {
     line: Element
     token: Element
     info: [prefix: string, content: string, suffix?: string]
-    jsxIntercept: boolean
+    isJsxStyle: boolean
 }[]
 
-const matchers: [re: RegExp, lastOnly: boolean][] = [
-    [/^(<!--)(.+)(-->)$/, true],
-    [/^(\/\*)(.+)(\*\/)$/, true],
-    [/^(\/\/|["']|;{1,2}|%{1,2}|--|#)(.+)$/, false]
+/**
+ * some comment formats have to be located at the end of line
+ * hence we can skip matching them for other tokens
+ */
+const matchers: [re: RegExp, endOfLine: boolean][] = [
+    [/^(<!--)(.+)(-->)$/, false],
+    [/^(\/\*)(.+)(\*\/)$/, false],
+    [/^(\/\/|["']|;{1,2}|%{1,2}|--|#)(.+)$/, true],
+    /**
+     * for multi-line comments like this
+     */
+    [/^(\*)(.+)$/, true],
 ]
 
 export function parseComments(lines: Element[], jsx: boolean): ParsedComments {
@@ -39,14 +47,14 @@ export function parseComments(lines: Element[], jsx: boolean): ParsedComments {
                     info: match,
                     line,
                     token,
-                    jsxIntercept: isValue(left, '{') && isValue(right, '}')
+                    isJsxStyle: isValue(left, '{') && isValue(right, '}')
                 })
             } else {
                 out.push({
                     info: match,
                     line,
                     token,
-                    jsxIntercept: false
+                    isJsxStyle: false
                 })
             }
         }
@@ -64,15 +72,20 @@ function isValue(element: ElementContent, value: string): boolean {
     return text.value.trim() === value
 }
 
-function matchToken(token: Element, last: boolean): [prefix: string, content: string, suffix?: string] | undefined {
+/**
+ * @param token the token node (children of line)
+ * @param isLast whether the token is located at the end of line
+ */
+function matchToken(token: Element, isLast: boolean): [prefix: string, content: string, suffix?: string] | undefined {
     const text = token.children[0]
     if (text.type !== 'text')
         return
 
-    for (const [matcher, lastOnly] of matchers) {
-        if (!lastOnly && !last) continue
+    for (const [matcher, endOfLine] of matchers) {
+        if (endOfLine && !isLast) continue
 
         // no leading and trailing spaces allowed for matchers
+        // we extract the spaces
         let trimmed = text.value.trimStart()
         const spaceFront = text.value.length - trimmed.length
 

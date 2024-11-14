@@ -8,3 +8,11 @@ function hello(indentSize, type) {
         console.log('highlighted')
     }
 }
+
+/**
+ * [!code highlight]
+ * hello world
+ */
+function test() {
+
+}
